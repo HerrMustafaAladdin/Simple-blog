@@ -91,6 +91,6 @@ class UserController extends ApiController
     public function destroy(User $user)
     {
         $user->delete();
-        return $this->successResponce($user, __('The desired user account was successfully deleted.'),200);
+        return $this->successResponce($user, __('The desired user account was edited correctly.'),200);
     }
 }
