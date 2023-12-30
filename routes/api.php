@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\CategoryController;
+use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\TagController;
 use App\Http\Controllers\API\V1\UserController;
 use Illuminate\Http\Request;
@@ -32,4 +33,7 @@ Route::prefix('v1')->group(function(){
 
     #|--------------------------------------------------- tags
     Route::apiResource('tags',TagController::class);
+
+    #|--------------------------------------------------- posts
+    Route::apiResource('posts',PostController::class);
 });
