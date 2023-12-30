@@ -47,8 +47,6 @@ class UserController extends ApiController
 
 
         return $this->successResponce($user, __('The new user was successfully created.'),200);
-
-
     }
 
     /**
@@ -56,7 +54,7 @@ class UserController extends ApiController
      */
     public function show(User $user)
     {
-        //
+        return $this->successResponce($user, '', 200);
     }
 
     /**
@@ -64,7 +62,27 @@ class UserController extends ApiController
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name'                      =>  ['required', 'string', 'min:3', 'max:100'],
+            'email'                     =>  ['required', 'email'],
+            'password'                  =>  ['required', 'string', 'min:6', 'max:32'],
+            'password_confirmation'     =>  ['required','same:password']
+        ]);
+
+        if($validator->fails())
+        {
+            return $this->errorResponce(422, $validator->messages());
+        }
+
+
+        $user->update([
+            'name'      =>  $request->input('name'),
+            'email'     =>  $request->input('email'),
+            'password'  =>  $request->has('password') ? Hash::make($request->password) : $user->password,
+        ]);
+
+
+        return $this->successResponce($user, __('The desired user account was edited correctly.'),201);
     }
 
     /**
@@ -72,6 +90,7 @@ class UserController extends ApiController
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return $this->successResponce($user, __('The desired user account was successfully deleted.'),200);
     }
 }
