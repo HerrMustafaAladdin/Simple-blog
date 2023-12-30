@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\Category::factory(10)->create();
+        \App\Models\Tag::factory(10)->create();
     }
 }
