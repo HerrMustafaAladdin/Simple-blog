@@ -218,5 +218,7 @@ class PostController extends ApiController
             DB::rollBack();
             return $this->errorResponce('500', $ex->getMessage());
         }
+
+        return $this->successResponce(new PostResponce($post->load('images')->load('tags')->load('user')->load('category')),'',200);
     }
 }
