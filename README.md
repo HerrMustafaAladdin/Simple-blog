@@ -1,13 +1,4 @@
-- 👋 Hi, I’m @HerrMustafaAladdin
-- 👀 I’m interested in PHP and Laravel 
-- 🌱 I’m currently learning Laravel RestFullApi
-- 💞️ I am looking for cooperation with German companies
-- 📫 How to reach me : Mostafa.alaeddin@outlook.de
-
-
----------------------------------
-
-About this project :
+ About  :
 
 It is a simple blog based on Laravel Rest Full API.
 
