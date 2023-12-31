@@ -215,6 +215,7 @@ class PostController extends ApiController
 
             DB::commit();
         } catch (\Exception $ex) {
+            DB::rollBack();
             return $this->errorResponce('500', $ex->getMessage());
         }
     }
