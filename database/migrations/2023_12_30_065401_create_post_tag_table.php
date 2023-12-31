@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('post_tag', function (Blueprint $table) {
 
+            $table->id();
+
             $table->foreignId('tag_id');
             $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->foreignId('post_id');
             $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete()->cascadeOnUpdate();
 
-            $table->primary(['tag_id','post_id']);
 
             $table->timestamps();
         });

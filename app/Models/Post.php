@@ -46,4 +46,9 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function postTags()
+    {
+        return $this->hasMany(PostTag::class);
+    }
 }

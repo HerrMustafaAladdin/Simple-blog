@@ -96,7 +96,7 @@ class PostController extends ApiController
         }
 
         return $this->successResponce([
-            'post' =>   $post
+            new PostResponce($post)
         ], __('The new post was successfully created.'),200);
     }
 
@@ -105,7 +105,9 @@ class PostController extends ApiController
      */
     public function show(Post $post)
     {
-        //
+        return $this->successResponce([
+            "Data"  =>  new PostResponce($post->load('images')->load('category')->load('tags')->load('user')),
+        ], '', 200);
     }
 
     /**
@@ -113,7 +115,83 @@ class PostController extends ApiController
      */
     public function update(Request $request, Post $post)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+
+            'user_id'       =>  ['required', 'integer'],
+            'category_id'   =>  ['required', 'integer'],
+            'title'         =>  ['required', 'string', 'min:3', 'max:100'],
+            'primary_image' =>  ['required', 'mimes:jpg,jpeg,png,svg,webp'],
+            'content'       =>  ['required', 'string', 'min:100', 'max:2000'],
+            'is_active'     =>  ['required', 'boolean'],
+
+            'tag_ids.*'     =>  ['required', 'integer'],
+
+            'images'        =>  ['required', 'array'],
+            'images.*'      =>  ['mimes:jpg,jpeg,png,svg,webp']
+
+        ]);
+
+        if($validator->fails())
+        {
+            return $this->errorResponce(422, $validator->messages());
+        }
+
+
+        try {
+            DB::beginTransaction();
+
+            if($request->has('primary_image'))
+            {
+                $primary_image_name = generateFileName($request->primary_image);
+                uploadFileImage($request->primary_image,'posts',$primary_image_name);
+            }
+
+            $post->update([
+                'user_id'       =>  $request->input('user_id'),
+                'category_id'   =>  $request->input('category_id'),
+                'title'         =>  $request->input('title'),
+                'primary_image' =>  $request->has('primary_image') ? $primary_image_name : $post->primary_image,
+                'content'       =>  $request->input('content'),
+                'is_active'     =>  $request->input('is_active'),
+            ]);
+
+            foreach($post->postTags as $tag)
+            {
+                $tag->delete();
+            }
+
+            foreach ($request->tag_ids as $value) {
+                PostTag::create([
+                    'post_id' =>    $post->id,
+                    'tag_id'  =>    $value
+                ]);
+            }
+            foreach($post->images as $image)
+            {
+                $image->delete();
+            }
+            foreach($request->images as $image)
+            {
+                $imageName = generateFileName($image);
+                uploadFileImage($image,'posts',$imageName);
+
+                PostImage::create([
+                    'post_id'   =>  $post->id,
+                    'name'      =>  $imageName
+                ]);
+
+            }
+
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return $this->errorResponce('500', $ex->getMessage());
+        }
+
+        return $this->successResponce([
+            new PostResponce($post)
+        ], __('The new post was successfully updated.'),200);
     }
 
     /**
@@ -121,6 +199,23 @@ class PostController extends ApiController
      */
     public function destroy(Post $post)
     {
-        //
+        try {
+            DB::beginTransaction();
+            foreach($post->images as $image)
+            {
+                $image->delete();
+            }
+
+            foreach($post->postTag as $tag)
+            {
+                $tag->delete();
+            }
+
+            $post->delete();
+
+            DB::commit();
+        } catch (\Exception $ex) {
+            return $this->errorResponce('500', $ex->getMessage());
+        }
     }
 }
