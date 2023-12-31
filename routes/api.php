@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\CategoryController;
+use App\Http\Controllers\API\V1\CommentController;
 use App\Http\Controllers\API\V1\PostController;
 use App\Http\Controllers\API\V1\TagController;
 use App\Http\Controllers\API\V1\UserController;
@@ -36,4 +37,7 @@ Route::prefix('v1')->group(function(){
 
     #|--------------------------------------------------- posts
     Route::apiResource('posts',PostController::class);
+
+    #|--------------------------------------------------- comments
+    Route::apiResource('comments',CommentController::class);
 });
