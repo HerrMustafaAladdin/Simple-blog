@@ -26,4 +26,24 @@ class Post extends Model
         return $this->belongsToMany(Tag::class,'post_tag');
     }
 
+
+    public function getIsActiveAttribute($is_active)
+    {
+        return $is_active ? __('Active') : __('DeActive');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(PostImage::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

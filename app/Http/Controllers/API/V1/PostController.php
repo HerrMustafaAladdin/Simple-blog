@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\API\V1\ApiController;
+use App\Http\Resources\API\V1\PostResponce;
 use App\Models\Post;
 use App\Models\PostImage;
 use App\Models\PostTag;
@@ -17,7 +18,13 @@ class PostController extends ApiController
      */
     public function index()
     {
-        //
+        $posts = Post::query()->orderBy('id','desc')->paginate(1);
+        return $this->successResponce([
+            "Data"  =>  PostResponce::collection($posts->load('images')->load('category')->load('tags')->load('user')),
+            "Links" =>  PostResponce::collection($posts)->response()->getData()->links,
+            "Meta"  =>  PostResponce::collection($posts)->response()->getData()->meta
+        ], '', 200);
+
     }
 
     /**
@@ -37,8 +44,8 @@ class PostController extends ApiController
 
             'tag_ids.*'     =>  ['required', 'integer'],
 
-            // 'images'        =>  ['required', 'array'],
-            // 'images.*'      =>  ['mimes:jpg,jpeg,png,svg,webp']
+            'images'        =>  ['required', 'array'],
+            'images.*'      =>  ['mimes:jpg,jpeg,png,svg,webp']
 
         ]);
 
